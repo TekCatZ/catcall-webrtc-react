@@ -1,0 +1,51 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start React Server",
+            "type": "shell",
+            "command": "yarn",
+            "args": [
+                "run",
+                "dev"
+            ],
+            "isBackground": true,
+            "problemMatcher": [
+                {
+                    "owner": "custom",
+                    "fileLocation": ["relative", "${workspaceFolder}"],
+                    // This is to define the pattern to match the output of the terminal of the task
+                    // This helps produce a problem matcher that can capture the message in the output and show a corresponding problem (PROBLEMS tab) in VS Code
+                    "pattern": [
+                        {
+                            "regexp": ".",
+                            "file": 1,
+                            "location": 2,
+                            "message": 3
+                        }
+                    ],
+                    "background": {
+                        "activeOnStart": true,
+                        "beginsPattern": ".",
+                        "endsPattern": ".*VITE.*ready.*"
+                    }
+                }
+            ]
+        },
+        
+        {
+            "label": "Terminate React Server Tasks",
+            "command": "echo ${input:terminate}",
+            "type": "shell",
+            "problemMatcher": []
+          }
+        ],
+        "inputs": [
+          {
+            "id": "terminate",
+            "type": "command",
+            "command": "workbench.action.tasks.terminate",
+            "args": "Start React Server"
+          }
+        ]
+}
