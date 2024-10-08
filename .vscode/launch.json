@@ -11,25 +11,5 @@
             "preLaunchTask": "Start React Server",
             "postDebugTask": "Terminate React Server Tasks",
         },
-        // Backup - not needed for now
-        // {
-        //     "type": "node",
-        //     "request": "launch",
-        //     "name": "Start React Server",
-        //     "runtimeExecutable": "yarn",
-        //     "runtimeArgs": [
-        //         "run",
-        //         "dev"
-        //     ],
-        //     "skipFiles": [
-        //         "<node_internals>/**"
-        //     ]
-        // }
     ],
-    // "compounds": [
-    //     {
-    //         "name": "Start React Server and Launch Chrome",
-    //         "configurations": [ "Start React Server", "Launch Vite App"]
-    //     }
-    // ]
 }
