@@ -14,6 +14,7 @@ dist-ssr
 
 # Editor directories and files
 !.vscode/extensions.json
+.vscode/settings.json
 .idea
 .DS_Store
 *.suo
@@ -30,4 +31,5 @@ dist-ssr
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-.vscode/settings.json
+
+
