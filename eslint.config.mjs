@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url'
 import { fixupConfigRules } from '@eslint/compat'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import prettier from 'eslint-plugin-prettier'
+// import prevent from 'eslint-config-prettier'
 import globals from 'globals'
 import tsParser from '@typescript-eslint/parser'
 import js from '@eslint/js'
@@ -18,7 +19,14 @@ const compat = new FlatCompat({
 
 export default [
   {
-    ignores: ['**/dist', '**/.eslintrc.cjs', '**/vite.config.ts', 'src/dev', '**/node_modules/', 'src/dev/'],
+    ignores: [
+      '**/dist',
+      '**/.eslintrc.cjs',
+      '**/vite.config.ts',
+      'src/dev',
+      '**/node_modules/',
+      'src/dev/',
+    ],
   },
   ...fixupConfigRules(
     compat.extends(
@@ -34,6 +42,7 @@ export default [
     plugins: {
       'react-refresh': reactRefresh,
       prettier,
+      // prevent,
     },
 
     languageOptions: {
@@ -52,6 +61,7 @@ export default [
           allowConstantExport: true,
         },
       ],
+      '@typescript-eslint/no-unused-vars': 'warn',
 
       'prettier/prettier': [
         'warn',
@@ -63,7 +73,7 @@ export default [
           endOfLine: 'auto',
           useTabs: false,
           singleQuote: true,
-          printWidth: 120,
+          printWidth: 100,
           jsxSingleQuote: true,
         },
       ],
@@ -71,7 +81,16 @@ export default [
       'import/order': [
         'error',
         {
-          groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object', 'type'],
+          groups: [
+            'builtin',
+            'external',
+            'internal',
+            'parent',
+            'sibling',
+            'index',
+            'object',
+            'type',
+          ],
         },
       ],
     },
