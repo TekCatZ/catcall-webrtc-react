@@ -17,7 +17,7 @@ const PageDefault = (props: PageDefaultProps) => {
       <MeshGradientRenderer
         className={`w-full h-full absolute top-0 left-0' ${filter ? `filter ${filter}` : ''}`}
         colors={colors}
-        speed={0.02}
+        speed={0.005}
       />
       {children}
     </>
