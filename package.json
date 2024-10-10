@@ -10,11 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@heroicons/react": "^2.1.5",
     "@johnn-e/react-mesh-gradient": "^1.1.1",
     "nice-color-palettes": "^4.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.26.2"
+    "react-router-dom": "^6.26.2",
+    "react-tooltip": "^5.28.0"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.0",
