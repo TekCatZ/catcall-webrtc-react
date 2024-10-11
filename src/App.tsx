@@ -6,7 +6,7 @@ import { routers } from './utils/routes'
 import { ThemeContext } from './themeContext'
 
 function App() {
-  const colorsSet = useMemo(() => colors[Math.floor(Math.random() * 500)], [])
+  const colorsSet = useMemo(() => colors[Math.floor(Math.random() * 100)], [])
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <ThemeContext.Provider value={colorsSet}>
