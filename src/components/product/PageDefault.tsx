@@ -1,6 +1,8 @@
 import { MeshGradientRenderer } from '@johnn-e/react-mesh-gradient'
 import { ReactNode, useContext } from 'react'
+import colors from 'nice-color-palettes'
 import { ThemeContext } from '../../themeContext'
+
 interface PageDefaultProps {
   children?: ReactNode
   filter?: string
@@ -10,13 +12,14 @@ interface PageDefaultProps {
 // The ThemeContext.Provider will provide the colors for the MeshGradientRenderer.
 const PageDefault = (props: PageDefaultProps) => {
   const { children, filter } = props
-  const colors = useContext(ThemeContext)
+  const themeColors = useContext(ThemeContext)
+  const defaultColors = colors[1]
 
   return (
     <>
       <MeshGradientRenderer
-        className={`w-full h-full absolute top-0 left-0' ${filter ? `filter ${filter}` : ''}`}
-        colors={colors}
+        className={`w-full h-full absolute top-0 left-0 ${filter ? `filter ${filter}` : ''}`}
+        colors={themeColors ?? defaultColors}
         speed={0.005}
       />
       {children}
