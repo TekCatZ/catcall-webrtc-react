@@ -1,6 +1,7 @@
 import { MeshGradientRenderer } from '@johnn-e/react-mesh-gradient'
 import { ReactNode, useContext } from 'react'
 import { ThemeContext } from '../../themeContext'
+import Toggle from '../common/Toggle'
 
 interface PageDefaultProps {
   children?: ReactNode
@@ -11,15 +12,21 @@ interface PageDefaultProps {
 // The ThemeContext.Provider will provide the colors for the MeshGradientRenderer.
 const PageDefault = (props: PageDefaultProps) => {
   const { children, filter } = props
-  const themeColors = useContext(ThemeContext)
+  const { colors: themeColors, meshGradient, toggleGradient } = useContext(ThemeContext)
 
   return (
     <>
-      <MeshGradientRenderer
-        className={`w-full h-full absolute top-0 left-0 ${filter ? `filter ${filter}` : ''}`}
-        colors={themeColors}
-        speed={0.005}
-      />
+      <header className=' flex flex-row justify-end items-center p-4'>
+        <Toggle label='Gradient Background' value={meshGradient} onClick={toggleGradient} />
+      </header>
+      {meshGradient ? (
+        <MeshGradientRenderer
+          className={`w-full h-full absolute top-0 left-0 ${filter ? `filter ${filter}` : ''}`}
+          colors={themeColors}
+          speed={0.005}
+        />
+      ) : null}
+
       {children}
     </>
   )
