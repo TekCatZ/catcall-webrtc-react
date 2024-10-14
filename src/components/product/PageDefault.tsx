@@ -1,6 +1,6 @@
 import { MeshGradientRenderer } from '@johnn-e/react-mesh-gradient'
 import { ReactNode, useContext } from 'react'
-import { ThemeContext } from '../../themeContext'
+import { ThemeContext } from '../../contexts/themeContext'
 import Toggle from '../common/Toggle'
 
 interface PageDefaultProps {
@@ -16,7 +16,7 @@ const PageDefault = (props: PageDefaultProps) => {
 
   return (
     <>
-      <header className=' flex flex-row justify-end items-center p-4'>
+      <header className='absolute right-0 top-0  p-4'>
         <Toggle label='Gradient Background' value={meshGradient} onClick={toggleGradient} />
       </header>
       {meshGradient ? (

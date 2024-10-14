@@ -3,7 +3,7 @@ import './App.css'
 import { Suspense, useMemo, useState } from 'react'
 import colors from 'nice-color-palettes'
 import { routers } from './utils/routes'
-import { ThemeContext } from './themeContext'
+import { ThemeContext } from './contexts/themeContext'
 
 function App() {
   const colorsSet = useMemo(() => colors[Math.floor(Math.random() * 100)], [])
