@@ -11,5 +11,15 @@
             "preLaunchTask": "Start React Server",
             "postDebugTask": "Terminate React Server Tasks",
         },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Vite App (with local expose)",
+            "url": "http://localhost:5173",
+            "webRoot": "${workspaceFolder}/src",
+            "runtimeExecutable": "stable",
+            "preLaunchTask": "Start React Server (with local expose)",
+            "postDebugTask": "Terminate React Server Tasks",
+        },
     ],
 }

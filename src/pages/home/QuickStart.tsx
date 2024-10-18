@@ -3,7 +3,9 @@ import { useState } from 'react'
 import { Tooltip as ReactTooltip } from 'react-tooltip'
 
 interface QuickStartProps {
-  quickId: number
+  quickId: number | string
+  partnerId?: string
+  onChangePartnerId?: (id: string) => void
   audioCallHanlder?: () => void
   videoCallHandler?: () => void
 }
@@ -54,6 +56,8 @@ const QuickStart = (props: QuickStartProps) => {
         <input
           id='partner-id'
           type='text'
+          value={props.partnerId}
+          onChange={(e) => props.onChangePartnerId?.(e.target.value)}
           className='border border-gray-300 p-2 rounded w-full max-w-xs bg-transparent backdrop-blur-3xl placeholder-gray-300'
           placeholder='Enter partner ID'
         />

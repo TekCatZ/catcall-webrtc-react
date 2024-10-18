@@ -4,6 +4,7 @@ import { Suspense, useMemo, useState } from 'react'
 import colors from 'nice-color-palettes'
 import { routers } from './utils/routes'
 import { ThemeContext } from './contexts/themeContext'
+import { CallContextProvider } from './contexts/callContext/callSocketContext'
 
 function App() {
   const colorsSet = useMemo(() => colors[Math.floor(Math.random() * 100)], [])
@@ -17,14 +18,16 @@ function App() {
   }
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <ThemeContext.Provider
-        value={{
-          colors: colorsSet,
-          toggleGradient,
-          meshGradient,
-        }}>
-        <RouterProvider router={routers} />
-      </ThemeContext.Provider>
+      <CallContextProvider>
+        <ThemeContext.Provider
+          value={{
+            colors: colorsSet,
+            toggleGradient,
+            meshGradient,
+          }}>
+          <RouterProvider router={routers} />
+        </ThemeContext.Provider>
+      </CallContextProvider>
     </Suspense>
   )
 }
