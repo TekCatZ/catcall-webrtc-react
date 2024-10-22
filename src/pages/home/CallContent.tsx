@@ -1,5 +1,5 @@
 import PhoneXMarkIcon from '@heroicons/react/20/solid/PhoneXMarkIcon'
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect, useRef } from 'react'
 import FluentButton from '../../components/common/FluentButton'
 import { CallSocketContext } from '../../contexts/callContext/callSocketContext'
 
@@ -18,16 +18,27 @@ const CallContent = ({ hangUpHandler }: { hangUpHandler: () => void }) => {
     remoteStream,
   } = useContext(CallSocketContext) || {}
 
+  const internalLocalRef = useRef<HTMLVideoElement | null>(null)
+  const internalRemoteRef = useRef<HTMLVideoElement | null>(null)
+
   useEffect(() => {
-    if (isInCall || isCalling) {
+    if (!internalLocalRef.current) return
+    else {
       if (localStream) {
-        if (localStreamRef && localStreamRef.current) localStreamRef.current.srcObject = localStream
-      }
-      if (remoteStream && remoteStreamRef && remoteStreamRef.current) {
-        remoteStreamRef.current.srcObject = remoteStream
+        internalLocalRef.current.srcObject = localStream
       }
     }
-  }, [isInCall, isCalling, localStream, remoteStream])
+  }, [localStream])
+
+  useEffect(() => {
+    if (!internalRemoteRef.current) return
+    else {
+      if (remoteStream) {
+        internalRemoteRef.current.srcObject = remoteStream
+      }
+    }
+  }, [remoteStream])
+
   return (
     <>
       <figure className=' flex md:flex-row flex-col justify-between items-stretch gap-3 '>
@@ -35,7 +46,7 @@ const CallContent = ({ hangUpHandler }: { hangUpHandler: () => void }) => {
           <video
             playsInline
             muted
-            ref={remoteStreamRef}
+            ref={internalRemoteRef ?? remoteStreamRef}
             autoPlay
             className='h-full w-full md:w-auto rounded-xl shadow-lg'
           />
@@ -44,7 +55,7 @@ const CallContent = ({ hangUpHandler }: { hangUpHandler: () => void }) => {
           <video
             playsInline
             muted
-            ref={localStreamRef}
+            ref={internalLocalRef ?? localStreamRef}
             autoPlay
             className='h-full w-full md:w-auto rounded-xl shadow-lg'
           />

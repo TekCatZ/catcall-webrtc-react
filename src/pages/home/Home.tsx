@@ -32,24 +32,25 @@ const Home = () => {
       <main className='w-full h-full flex flex-col  justify-center items-stretch'>
         <div
           className={`flex flex-row justify-center ease-in-out duration-1000 ${isInCall ? 'flex-1 transition-all' : 'flex-0 transition-all'}`}>
-          <FluentCard addOnClasses={`duration-1000 transition-all ease-in-out ${isInCall ? 'flex-1 ' : ' flex-0'} `}>
-            {/* {!isInCall ? ( */}
-            <QuickStart
-              quickId={selfId ?? ''}
-              audioCallHanlder={() => {
-                //TODO: Implement audio call
-                // setIsFullscreen((prev) => !prev)
-              }}
-              videoCallHandler={() => {
-                //TODO: Implement video call
-                makeCall?.(idToCall)
-                // setIsFullscreen((prev) => !prev)
-              }}
-              onChangePartnerId={(id) => setIdToCall(id)}
-            />
-            {/* ) : ( */}
-            <CallContent hangUpHandler={handleHangUp} />
-            {/* )} */}
+          <FluentCard
+            addOnClasses={`duration-1000 transition-all ease-in-out ${isInCall ? 'flex-1 ' : ' flex-0'} `}>
+            {!isInCall ? (
+              <QuickStart
+                quickId={selfId ?? ''}
+                audioCallHanlder={() => {
+                  //TODO: Implement audio call
+                  // setIsFullscreen((prev) => !prev)
+                }}
+                videoCallHandler={() => {
+                  //TODO: Implement video call
+                  makeCall?.(idToCall)
+                  // setIsFullscreen((prev) => !prev)
+                }}
+                onChangePartnerId={(id) => setIdToCall(id)}
+              />
+            ) : (
+              <CallContent hangUpHandler={handleHangUp} />
+            )}
             {/* <CallContent hangUpHandler={handleHangUp} /> */}
           </FluentCard>
         </div>

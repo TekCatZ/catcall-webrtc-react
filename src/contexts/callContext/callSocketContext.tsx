@@ -15,7 +15,7 @@ interface CallSocketContextType {
 }
 
 const CallSocketContext = createContext<CallSocketContextType | null>(null)
-const ws = new WebSocket('ws://192.168.1.32:9090')
+const ws = new WebSocket('ws://localhost:9090')
 
 const CallContextProvider = ({ children }: { children: ReactNode }) => {
   const [clientId, setClientId] = useState<string | null>(null)
@@ -213,12 +213,15 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
     }
 
     if (localStreamRef.current && localStreamRef.current.srcObject) {
-      const localStream = localStreamRef.current.srcObject as MediaStream
-      localStream.getTracks().forEach((track) => {
-        peerConnection.addTrack(track, localStream)
+      const localStreamCurrnt = localStreamRef?.current?.srcObject as MediaStream
+      localStreamCurrnt.getTracks().forEach((track) => {
+        peerConnection.addTrack(track, localStreamCurrnt)
       })
     } else {
-      console.error('Local stream is not ready, saving to state')
+      console.error('Local stream ref is not ready. Saving to state')
+      localStream?.getTracks().forEach((track) => {
+        peerConnection.addTrack(track, localStream)
+      })
     }
 
     return peerConnection
