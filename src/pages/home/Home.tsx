@@ -1,41 +1,54 @@
-import { useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
+import { logEvent } from 'firebase/analytics'
 import PageDefault from '../../components/product/PageDefault'
 import FluentCard from '../../components/common/FluentCard'
 import ModalDialog from '../../components/common/ModalDialog'
+import { CallSocketContext } from '../../contexts/callContext/callSocketContext'
+import Logger from '../../utils/logger'
+import analytics from '../../utils/firebase-analytic'
 import QuickStart from './QuickStart'
 import CallContent from './CallContent'
 
 const Home = () => {
-  const id = 1
-
-  const [isFullscreen, setIsFullscreen] = useState(false)
+  // const [isFullscreen, setIsFullscreen] = useState(false)
 
   const [isCallModalOpen, setIsCallModalOpen] = useState(false)
 
+  const { selfId, makeCall, callerId, doAnswer, doHangUp, isInCall, doRejectCall } = useContext(CallSocketContext) || {}
+
+  const [idToCall, setIdToCall] = useState('')
+
   const handleHangUp = () => {
-    //TODO: Implement hang up
-    setIsFullscreen((prev) => !prev)
+    doHangUp?.(true)
   }
+
+  useEffect(() => {
+    if (callerId) {
+      setIsCallModalOpen(true)
+    }
+  }, [callerId])
 
   return (
     <PageDefault filter='sepia-900'>
       <main className='w-full h-full flex flex-col  justify-center items-stretch'>
         <div
-          className={`flex flex-row justify-center ease-in-out duration-1000 ${isFullscreen ? 'flex-1 transition-all' : 'flex-0 transition-all'}`}>
+          className={`flex flex-row justify-center ease-in-out duration-1000 ${isInCall ? 'flex-1 transition-all' : 'flex-0 transition-all'}`}>
           <FluentCard
-            addOnClasses={`duration-1000 transition-all ease-in-out ${isFullscreen ? 'flex-1 ' : ' flex-0'} `}>
-            {!isFullscreen ? (
+            addOnClasses={` ${isInCall ? ' ' : 'max-w-[90vw] sm:max-w-[50vw] md:max-w-[50vw] lg:max-w-[35vw]'}  duration-1000 transition-all ease-in-out ${isInCall ? 'flex-1 ' : ' flex-0'} `}>
+            {!isInCall ? (
               <QuickStart
-                quickId={id}
+                quickId={selfId ?? ''}
                 audioCallHanlder={() => {
-                  //TODO: Implement audio call
-                  setIsFullscreen((prev) => !prev)
+                  makeCall?.(idToCall, false)
+                  logEvent(analytics, 'audio_call')
                 }}
                 videoCallHandler={() => {
                   //TODO: Implement video call
-                  // setIsFullscreen((prev) => !prev)
-                  setIsCallModalOpen(true)
+                  makeCall?.(idToCall, true)
+
+                  logEvent(analytics, 'video_call')
                 }}
+                onChangePartnerId={(id) => setIdToCall(id)}
               />
             ) : (
               <CallContent hangUpHandler={handleHangUp} />
@@ -47,17 +60,18 @@ const Home = () => {
       <ModalDialog
         openModal={isCallModalOpen}
         closeModal={() => setIsCallModalOpen(false)}
-        title='You get a call from +1 555 555 555. Do you want to accept?'
+        title={`Incoming call from ${callerId}. Accept?`}
         acceptLabel='Accept'
         cancelLabel='Cancel'
         acceptHandler={() => {
           setIsCallModalOpen(false)
-          setIsFullscreen(true)
-          console.log('Accept')
+          doAnswer?.()
+          Logger.log('Accept')
         }}
         cancelHandler={() => {
+          doRejectCall?.()
           setIsCallModalOpen(false)
-          console.log('Cancel')
+          Logger.log('Cancel')
         }}
       />
     </PageDefault>
