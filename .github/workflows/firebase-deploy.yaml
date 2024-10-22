@@ -13,13 +13,13 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4.2.1
 
+    - name: Enable Corepack before setting up Node
+      run: corepack enable
+
     - name: Setup Node.js environment
       uses: actions/setup-node@v4.0.4
       with:
         node-version: '20'
-    - run: |
-      corepack enable
-      pnpm --version
 
     - name: Install dependencies
       run: yarn install
