@@ -188,13 +188,6 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
   }
 
   useEffect(() => {
-    ws.onopen = () => {
-      console.log('Connected to the signaling server')
-    }
-    startLocalStream()
-  }, [])
-
-  useEffect(() => {
     ws.onerror = (error) => {
       console.error('Error:', error)
     }
