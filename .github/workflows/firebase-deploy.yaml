@@ -17,6 +17,9 @@ jobs:
       uses: actions/setup-node@v4.0.4
       with:
         node-version: '20'
+    - run: |
+      corepack enable
+      pnpm --version
 
     - name: Install dependencies
       run: yarn install
