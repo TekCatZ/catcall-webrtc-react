@@ -1,0 +1,32 @@
+name: Deploy to Firebase
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20'
+
+    - name: Install dependencies
+      run: yarn install
+
+    - name: Build the React app
+      run: yarn build
+
+    - name: Deploy to Firebase
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      run: |
+        yarn global add firebase-tools
+        firebase deploy --only hosting
