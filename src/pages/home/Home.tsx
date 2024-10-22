@@ -11,8 +11,7 @@ const Home = () => {
 
   const [isCallModalOpen, setIsCallModalOpen] = useState(false)
 
-  const { selfId, makeCall, callerId, doAnswer, doHangUp, isInCall } =
-    useContext(CallSocketContext) || {}
+  const { selfId, makeCall, callerId, doAnswer, doHangUp, isInCall } = useContext(CallSocketContext) || {}
 
   const [idToCall, setIdToCall] = useState('')
 
@@ -37,10 +36,7 @@ const Home = () => {
             {!isInCall ? (
               <QuickStart
                 quickId={selfId ?? ''}
-                audioCallHanlder={() => {
-                  //TODO: Implement audio call
-                  // setIsFullscreen((prev) => !prev)
-                }}
+                audioCallHanlder={() => {}}
                 videoCallHandler={() => {
                   //TODO: Implement video call
                   makeCall?.(idToCall)
@@ -51,7 +47,6 @@ const Home = () => {
             ) : (
               <CallContent hangUpHandler={handleHangUp} />
             )}
-            {/* <CallContent hangUpHandler={handleHangUp} /> */}
           </FluentCard>
         </div>
       </main>

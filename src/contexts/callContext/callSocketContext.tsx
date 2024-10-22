@@ -40,12 +40,6 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
   }, [])
 
   useEffect(() => {
-    if (isInCall || isCalling) {
-      startLocalStream()
-    }
-  }, [isInCall, isCalling])
-
-  useEffect(() => {
     ws.onerror = (error) => {
       console.error('Error:', error)
     }
@@ -97,6 +91,8 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
     const peerConnection = createPeerConnection(callerId)
     peerConnectionRef.current = peerConnection
 
+    await startLocalStream()
+
     if (!callerOffer) {
       alert('No caller offer')
       return
@@ -128,6 +124,8 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
     const peerConnection = createPeerConnection(targetId)
     peerConnectionRef.current = peerConnection
 
+    await startLocalStream()
+
     const offer = await peerConnection.createOffer()
     await peerConnection.setLocalDescription(offer)
 
@@ -143,10 +141,15 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const handleHangUp = (manualFire: boolean) => {
-    // Close peer connection
-    if (peerConnectionRef.current) {
-      peerConnectionRef.current.close()
-      peerConnectionRef.current = null
+    if (manualFire) {
+      // Gửi tín hiệu "hang up" cho đối tác
+      ws.send(
+        JSON.stringify({
+          type: 'hang-up',
+          // get partner id from current call
+          targetId: callerId || targetId,
+        }),
+      )
     }
 
     // Clean up local and remote streams
@@ -160,15 +163,10 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
       tracks.forEach((track) => track.stop())
     }
 
-    if (manualFire) {
-      // Gửi tín hiệu "hang up" cho đối tác
-      ws.send(
-        JSON.stringify({
-          type: 'hang-up',
-          // get partner id from current call
-          targetId: callerId || targetId,
-        }),
-      )
+    // Close peer connection
+    if (peerConnectionRef.current) {
+      peerConnectionRef.current.close()
+      peerConnectionRef.current = null
     }
 
     // Reset state
@@ -202,19 +200,16 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
       setRemoteStream(event.streams[0])
     }
 
-    if (localStream) {
-      localStream.getTracks().forEach((track) => {
-        peerConnection.addTrack(track, localStream)
-      })
-    }
-
     return peerConnection
   }
 
   const startLocalStream = async () => {
-    console.log('Requesting local stream')
     const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-
+    stream.getTracks().forEach((track) => {
+      if (peerConnectionRef.current) {
+        peerConnectionRef.current.addTrack(track, stream)
+      }
+    })
     setLocalStream(stream)
   }
 
