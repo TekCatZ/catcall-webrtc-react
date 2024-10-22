@@ -17,6 +17,7 @@ const QuickStart = (props: QuickStartProps) => {
 
   const handleCopy = () => {
     navigator.clipboard.writeText(quickId.toString())
+
     setTooltipVisible(true)
     setTimeout(() => {
       setTooltipVisible(false)

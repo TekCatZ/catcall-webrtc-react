@@ -12,7 +12,7 @@ interface ThemeContextType {
 const defaultContextValue: ThemeContextType = {
   colors: [],
   currentTheme: 'light',
-  meshGradient: false,
+  meshGradient: true,
   toggleTheme: () => {},
 }
 
