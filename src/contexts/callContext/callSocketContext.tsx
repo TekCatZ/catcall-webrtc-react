@@ -1,11 +1,9 @@
-import { createContext, MutableRefObject, ReactNode, useEffect, useRef, useState } from 'react'
+import { createContext, ReactNode, useEffect, useRef, useState } from 'react'
 
 interface CallSocketContextType {
   selfId?: string
   isCalling?: boolean
   isInCall?: boolean
-  localStreamRef: MutableRefObject<HTMLVideoElement | null>
-  remoteStreamRef: MutableRefObject<HTMLVideoElement | null>
   makeCall: (targetId: string) => void
   callerId?: string
   doAnswer?: () => void
@@ -29,9 +27,6 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
   const [callerId, setCallerId] = useState('')
   const [callerOffer, setCallerOffer] = useState<RTCSessionDescriptionInit | null>(null)
 
-  const localStreamRef = useRef<HTMLVideoElement>(null)
-  const remoteStreamRef = useRef<HTMLVideoElement>(null)
-
   const [localStream, setLocalStream] = useState<MediaStream | null>(null)
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
 
@@ -45,13 +40,16 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
   }, [])
 
   useEffect(() => {
-    console.log('isInCall:', isInCall)
     if (isInCall || isCalling) {
       startLocalStream()
     }
   }, [isInCall, isCalling])
 
   useEffect(() => {
+    ws.onerror = (error) => {
+      console.error('Error:', error)
+    }
+
     ws.onmessage = (message) => {
       const data = JSON.parse(message.data)
 
@@ -152,14 +150,15 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Dọn dẹp video stream
-    if (localStreamRef.current && localStreamRef.current.srcObject) {
-      const tracks = (localStreamRef.current.srcObject as MediaStream).getTracks()
+    if (localStream) {
+      const tracks = localStream.getTracks()
       tracks.forEach((track) => track.stop())
-      localStreamRef.current.srcObject = null
     }
 
-    if (remoteStreamRef.current) {
-      remoteStreamRef.current.srcObject = null
+    if (remoteStream) {
+      //TODO: Check if it needs to be stopped or not. Then remove this code
+      const tracks = remoteStream.getTracks()
+      tracks.forEach((track) => track.stop())
     }
 
     if (manualFire) {
@@ -174,7 +173,6 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Reset state
-    setLocalStream(null)
     setRemoteStream(null)
 
     setCallerId('')
@@ -202,24 +200,11 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
     }
 
     peerConnection.ontrack = (event) => {
-      console.log('Got remote stream', event)
-      console.log('remoteStreamRef:', remoteStreamRef)
-      console.log('remoteStreamRef.current:', remoteStreamRef.current)
-      if (remoteStreamRef.current) {
-        remoteStreamRef.current.srcObject = event.streams[0]
-      } else {
-        setRemoteStream(event.streams[0])
-      }
+      setRemoteStream(event.streams[0])
     }
 
-    if (localStreamRef.current && localStreamRef.current.srcObject) {
-      const localStreamCurrnt = localStreamRef?.current?.srcObject as MediaStream
-      localStreamCurrnt.getTracks().forEach((track) => {
-        peerConnection.addTrack(track, localStreamCurrnt)
-      })
-    } else {
-      console.error('Local stream ref is not ready. Saving to state')
-      localStream?.getTracks().forEach((track) => {
+    if (localStream) {
+      localStream.getTracks().forEach((track) => {
         peerConnection.addTrack(track, localStream)
       })
     }
@@ -242,13 +227,8 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
     }
     console.log('Requesting local stream')
     const stream = await navigator.mediaDevices.getUserMedia(constraints)
-    console.log('Local stream:', stream)
-    if (localStreamRef.current) {
-      localStreamRef.current.srcObject = stream
-    } else {
-      console.log('Local stream ref is not ready, saving to state')
-      setLocalStream(stream)
-    }
+
+    setLocalStream(stream)
   }
 
   return (
@@ -257,8 +237,6 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
         selfId: clientId ?? '',
         isCalling,
         isInCall,
-        localStreamRef,
-        remoteStreamRef,
         makeCall,
         callerId,
         doAnswer: handleDoAnswer,

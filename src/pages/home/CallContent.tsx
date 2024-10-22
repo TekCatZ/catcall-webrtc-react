@@ -4,37 +4,37 @@ import FluentButton from '../../components/common/FluentButton'
 import { CallSocketContext } from '../../contexts/callContext/callSocketContext'
 
 const CallContent = ({ hangUpHandler }: { hangUpHandler: () => void }) => {
-  const {
-    selfId,
-    localStreamRef,
-    remoteStreamRef,
-    makeCall,
-    callerId,
-    doAnswer,
-    doHangUp,
-    isCalling,
-    isInCall,
-    localStream,
-    remoteStream,
-  } = useContext(CallSocketContext) || {}
+  const { localStream, remoteStream } = useContext(CallSocketContext) || {}
 
   const internalLocalRef = useRef<HTMLVideoElement | null>(null)
   const internalRemoteRef = useRef<HTMLVideoElement | null>(null)
 
   useEffect(() => {
-    if (!internalLocalRef.current) return
+    const currentRef = internalLocalRef?.current
+    if (!currentRef) return
     else {
       if (localStream) {
-        internalLocalRef.current.srcObject = localStream
+        currentRef.srcObject = localStream
+      }
+    }
+    return () => {
+      if (currentRef) {
+        currentRef.srcObject = null
       }
     }
   }, [localStream])
 
   useEffect(() => {
-    if (!internalRemoteRef.current) return
+    const currentRef = internalRemoteRef?.current
+    if (!currentRef) return
     else {
       if (remoteStream) {
-        internalRemoteRef.current.srcObject = remoteStream
+        currentRef.srcObject = remoteStream
+      }
+    }
+    return () => {
+      if (currentRef) {
+        currentRef.srcObject = null
       }
     }
   }, [remoteStream])
@@ -46,7 +46,7 @@ const CallContent = ({ hangUpHandler }: { hangUpHandler: () => void }) => {
           <video
             playsInline
             muted
-            ref={internalRemoteRef ?? remoteStreamRef}
+            ref={internalRemoteRef}
             autoPlay
             className='h-full w-full md:w-auto rounded-xl shadow-lg'
           />
@@ -55,7 +55,7 @@ const CallContent = ({ hangUpHandler }: { hangUpHandler: () => void }) => {
           <video
             playsInline
             muted
-            ref={internalLocalRef ?? localStreamRef}
+            ref={internalLocalRef}
             autoPlay
             className='h-full w-full md:w-auto rounded-xl shadow-lg'
           />
