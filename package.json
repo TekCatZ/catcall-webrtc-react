@@ -13,6 +13,7 @@
   "dependencies": {
     "@heroicons/react": "^2.1.5",
     "@johnn-e/react-mesh-gradient": "^1.1.1",
+    "firebase": "^11.0.1",
     "global": "^4.4.0",
     "nice-color-palettes": "^4.0.0",
     "react": "^18.3.1",

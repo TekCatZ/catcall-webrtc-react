@@ -1,9 +1,11 @@
 import { useContext, useEffect, useState } from 'react'
+import { logEvent } from 'firebase/analytics'
 import PageDefault from '../../components/product/PageDefault'
 import FluentCard from '../../components/common/FluentCard'
 import ModalDialog from '../../components/common/ModalDialog'
 import { CallSocketContext } from '../../contexts/callContext/callSocketContext'
 import Logger from '../../utils/logger'
+import analytics from '../../utils/firebase-analytic'
 import QuickStart from './QuickStart'
 import CallContent from './CallContent'
 
@@ -38,11 +40,13 @@ const Home = () => {
                 quickId={selfId ?? ''}
                 audioCallHanlder={() => {
                   makeCall?.(idToCall, false)
+                  logEvent(analytics, 'audio_call')
                 }}
                 videoCallHandler={() => {
                   //TODO: Implement video call
                   makeCall?.(idToCall, true)
-                  // setIsFullscreen((prev) => !prev)
+
+                  logEvent(analytics, 'video_call')
                 }}
                 onChangePartnerId={(id) => setIdToCall(id)}
               />
