@@ -41,7 +41,7 @@ jobs:
           yarn dlx firebase-tools deploy --only hosting
 
       - name: Deploy to Firebase (preview)
-        if: github.ref == 'refs/heads/preview/*'
+        if: startsWith(github.ref, 'refs/heads/preview/')
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
