@@ -32,18 +32,18 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
 
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null)
 
-  // useEffect(() => {
-  //   ws.onopen = () => {
-  //     console.log('Connected to the signaling server')
-  //   }
-  //   startLocalStream()
-  // }, [])
+  useEffect(() => {
+    ws.onopen = () => {
+      console.log('Connected to the signaling server')
+    }
+    startLocalStream()
+  }, [])
 
-  // useEffect(() => {
-  //   if (isInCall || isCalling) {
-  //     startLocalStream()
-  //   }
-  // }, [isInCall, isCalling])
+  useEffect(() => {
+    if (isInCall || isCalling) {
+      startLocalStream()
+    }
+  }, [isInCall, isCalling])
 
   useEffect(() => {
     ws.onerror = (error) => {
