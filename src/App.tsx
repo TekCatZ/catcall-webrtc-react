@@ -10,7 +10,9 @@ import { CallContextProvider } from './contexts/callContext/callSocketContext'
 
 function App() {
   const colorsSet = useMemo(() => colors[Math.floor(Math.random() * 100)], [])
-  const [meshGradient, setMeshGradient] = useState(!(localStorage.getItem('meshGradient') === 'false'))
+  const [meshGradient, setMeshGradient] = useState(
+    !(localStorage.getItem('meshGradient') === 'false'),
+  )
 
   const toggleGradient = () => {
     setMeshGradient((prev) => {
