@@ -5,7 +5,8 @@ interface CallSocketContextType {
   selfId?: string
   isCalling?: boolean
   isInCall?: boolean
-  makeCall: (targetId: string) => void
+  makeCall: (targetId: string, videoCall: boolean) => void
+  doRejectCall?: () => void
   callerId?: string
   doAnswer?: () => void
   doHangUp?: (fireManually: boolean) => void
@@ -13,7 +14,7 @@ interface CallSocketContextType {
   remoteStream?: MediaStream | null
 }
 
-const WEB_SOCKET_URL = import.meta.env.VITE_REACT_APP_WS_URL || 'ws://localhost:9090'
+const WEB_SOCKET_URL = 'ws://localhost:9090'
 
 const CallSocketContext = createContext<CallSocketContextType | null>(null)
 const ws = new WebSocket(WEB_SOCKET_URL)
@@ -33,6 +34,8 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null)
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
 
+  const [videoCall, setVideoCall] = useState(true)
+
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null)
 
   const handleNewICECandidate = (candidate: RTCIceCandidate) => {
@@ -41,18 +44,23 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
-  const handleReceiveOffer = async (offer: RTCSessionDescriptionInit, from: string) => {
+  const handleReceiveOffer = async (
+    offer: RTCSessionDescriptionInit,
+    from: string,
+    isVideoCall: boolean,
+  ) => {
     if (peerConnectionRef.current) return
 
     setCallerId(from)
     setCallerOffer(offer)
+    setVideoCall(isVideoCall)
   }
 
   const handleDoAnswer = async () => {
     const peerConnection = createPeerConnection(callerId)
     peerConnectionRef.current = peerConnection
 
-    await startLocalStream()
+    await startLocalStream(videoCall)
 
     if (!callerOffer) {
       alert('No caller offer')
@@ -80,12 +88,13 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
     setIsInCall(true)
   }
 
-  const makeCall = async (targetId: string) => {
+  const makeCall = async (targetId: string, videoCall: boolean) => {
     setTargetId(targetId)
     const peerConnection = createPeerConnection(targetId)
     peerConnectionRef.current = peerConnection
 
-    await startLocalStream()
+    setVideoCall(videoCall)
+    await startLocalStream(videoCall)
 
     const offer = await peerConnection.createOffer()
     await peerConnection.setLocalDescription(offer)
@@ -95,10 +104,28 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
         type: 'call',
         targetId,
         offer,
+        isVideoCall: videoCall,
       }),
     )
 
     setIsCalling(true)
+  }
+
+  const rejectCall = () => {
+    ws.send(
+      JSON.stringify({
+        type: 'reject-call',
+        callerId: callerId,
+      }),
+    )
+
+    setCallerId('')
+    setCallerOffer(null)
+  }
+
+  const handleReceiveReject = () => {
+    peerConnectionRef.current?.close()
+    peerConnectionRef.current = null
   }
 
   const handleHangUp = useCallback(
@@ -178,8 +205,8 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
     return peerConnection
   }
 
-  const startLocalStream = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+  const startLocalStream = async (video: boolean) => {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: video ?? false, audio: true })
     stream.getTracks().forEach((track) => {
       if (peerConnectionRef.current) {
         peerConnectionRef.current.addTrack(track, stream)
@@ -202,7 +229,7 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
           break
 
         case 'offer':
-          handleReceiveOffer(data.offer, data.from)
+          handleReceiveOffer(data.offer, data.from, data.isVideoCall)
           break
 
         case 'answer':
@@ -211,6 +238,10 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
 
         case 'ice-candidate':
           handleNewICECandidate(data.candidate)
+          break
+
+        case 'call-rejected':
+          handleReceiveReject()
           break
 
         case 'hang-up':
@@ -230,6 +261,7 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
         isCalling,
         isInCall,
         makeCall,
+        doRejectCall: rejectCall,
         callerId,
         doAnswer: handleDoAnswer,
         doHangUp: handleHangUp,

@@ -12,8 +12,7 @@ const Home = () => {
 
   const [isCallModalOpen, setIsCallModalOpen] = useState(false)
 
-  const { selfId, makeCall, callerId, doAnswer, doHangUp, isInCall } =
-    useContext(CallSocketContext) || {}
+  const { selfId, makeCall, callerId, doAnswer, doHangUp, isInCall, doRejectCall } = useContext(CallSocketContext) || {}
 
   const [idToCall, setIdToCall] = useState('')
 
@@ -37,10 +36,12 @@ const Home = () => {
             {!isInCall ? (
               <QuickStart
                 quickId={selfId ?? ''}
-                audioCallHanlder={() => {}}
+                audioCallHanlder={() => {
+                  makeCall?.(idToCall, false)
+                }}
                 videoCallHandler={() => {
                   //TODO: Implement video call
-                  makeCall?.(idToCall)
+                  makeCall?.(idToCall, true)
                   // setIsFullscreen((prev) => !prev)
                 }}
                 onChangePartnerId={(id) => setIdToCall(id)}
@@ -64,6 +65,7 @@ const Home = () => {
           Logger.log('Accept')
         }}
         cancelHandler={() => {
+          doRejectCall?.()
           setIsCallModalOpen(false)
           Logger.log('Cancel')
         }}
