@@ -14,7 +14,7 @@ interface CallSocketContextType {
   remoteStream?: MediaStream | null
 }
 
-const WEB_SOCKET_URL = 'ws://localhost:9090'
+const WEB_SOCKET_URL = import.meta.env.VITE_REACT_APP_WS_URL || 'ws://localhost:9090'
 
 const CallSocketContext = createContext<CallSocketContextType | null>(null)
 const ws = new WebSocket(WEB_SOCKET_URL)
