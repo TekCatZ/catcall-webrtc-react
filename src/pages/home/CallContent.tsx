@@ -2,6 +2,7 @@ import PhoneXMarkIcon from '@heroicons/react/20/solid/PhoneXMarkIcon'
 import { useContext, useEffect, useRef } from 'react'
 import FluentButton from '../../components/common/FluentButton'
 import { CallSocketContext } from '../../contexts/callContext/callSocketContext'
+import Logger from '../../utils/logger'
 
 const CallContent = ({ hangUpHandler }: { hangUpHandler: () => void }) => {
   const { localStream, remoteStream } = useContext(CallSocketContext) || {}
@@ -31,10 +32,10 @@ const CallContent = ({ hangUpHandler }: { hangUpHandler: () => void }) => {
       if (remoteStream) {
         currentRef.srcObject = remoteStream
         currentRef.addEventListener('loadedmetadata', (e) => {
-          console.log('Remote video loadedmetadata', e)
+          Logger.log('Remote video loadedmetadata', e)
         })
         currentRef.addEventListener('*', (event) => {
-          console.log('Remote video event:', event)
+          Logger.log('Remote video event:', event)
         })
       }
     }

@@ -1,4 +1,5 @@
 import { createContext, ReactNode, useCallback, useEffect, useRef, useState } from 'react'
+import Logger from '../../utils/logger'
 
 interface CallSocketContextType {
   selfId?: string
@@ -217,7 +218,7 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
           break
 
         default:
-          console.log('Unknown message:', data)
+          Logger.log('Unknown message:', data)
       }
     }
   }, [handleHangUp])

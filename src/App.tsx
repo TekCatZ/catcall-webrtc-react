@@ -5,6 +5,7 @@ import colors from 'nice-color-palettes'
 import { routers } from './utils/routes'
 import { ThemeContext } from './contexts/themeContext'
 import { CallContextProvider } from './contexts/callContext/callSocketContext'
+// import Logger from './utils/logger'
 
 function App() {
   const colorsSet = useMemo(() => colors[Math.floor(Math.random() * 100)], [])
@@ -18,6 +19,8 @@ function App() {
       return !prev
     })
   }
+
+  // Logger.mode()
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <CallContextProvider>

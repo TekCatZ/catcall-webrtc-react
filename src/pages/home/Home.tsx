@@ -3,6 +3,7 @@ import PageDefault from '../../components/product/PageDefault'
 import FluentCard from '../../components/common/FluentCard'
 import ModalDialog from '../../components/common/ModalDialog'
 import { CallSocketContext } from '../../contexts/callContext/callSocketContext'
+import Logger from '../../utils/logger'
 import QuickStart from './QuickStart'
 import CallContent from './CallContent'
 
@@ -11,7 +12,8 @@ const Home = () => {
 
   const [isCallModalOpen, setIsCallModalOpen] = useState(false)
 
-  const { selfId, makeCall, callerId, doAnswer, doHangUp, isInCall } = useContext(CallSocketContext) || {}
+  const { selfId, makeCall, callerId, doAnswer, doHangUp, isInCall } =
+    useContext(CallSocketContext) || {}
 
   const [idToCall, setIdToCall] = useState('')
 
@@ -59,11 +61,11 @@ const Home = () => {
         acceptHandler={() => {
           setIsCallModalOpen(false)
           doAnswer?.()
-          console.log('Accept')
+          Logger.log('Accept')
         }}
         cancelHandler={() => {
           setIsCallModalOpen(false)
-          console.log('Cancel')
+          Logger.log('Cancel')
         }}
       />
     </PageDefault>
