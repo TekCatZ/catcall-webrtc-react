@@ -32,18 +32,18 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
 
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null)
 
-  useEffect(() => {
-    ws.onopen = () => {
-      console.log('Connected to the signaling server')
-    }
-    startLocalStream()
-  }, [])
+  // useEffect(() => {
+  //   ws.onopen = () => {
+  //     console.log('Connected to the signaling server')
+  //   }
+  //   startLocalStream()
+  // }, [])
 
-  useEffect(() => {
-    if (isInCall || isCalling) {
-      startLocalStream()
-    }
-  }, [isInCall, isCalling])
+  // useEffect(() => {
+  //   if (isInCall || isCalling) {
+  //     startLocalStream()
+  //   }
+  // }, [isInCall, isCalling])
 
   useEffect(() => {
     ws.onerror = (error) => {
@@ -143,20 +143,19 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const handleHangUp = (manualFire: boolean) => {
-    // Dừng stream và đóng kết nối WebRTC
+    // Close peer connection
     if (peerConnectionRef.current) {
       peerConnectionRef.current.close()
       peerConnectionRef.current = null
     }
 
-    // Dọn dẹp video stream
+    // Clean up local and remote streams
     if (localStream) {
       const tracks = localStream.getTracks()
       tracks.forEach((track) => track.stop())
     }
 
     if (remoteStream) {
-      //TODO: Check if it needs to be stopped or not. Then remove this code
       const tracks = remoteStream.getTracks()
       tracks.forEach((track) => track.stop())
     }
@@ -213,20 +212,8 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const startLocalStream = async () => {
-    let facingMode = 'user'
-    if (facingMode == 'user') {
-      facingMode = 'environment'
-    } else {
-      facingMode = 'user'
-    }
-    const constraints = {
-      audio: false,
-      video: {
-        facingMode: facingMode,
-      },
-    }
     console.log('Requesting local stream')
-    const stream = await navigator.mediaDevices.getUserMedia(constraints)
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false })
 
     setLocalStream(stream)
   }

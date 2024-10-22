@@ -30,6 +30,12 @@ const CallContent = ({ hangUpHandler }: { hangUpHandler: () => void }) => {
     else {
       if (remoteStream) {
         currentRef.srcObject = remoteStream
+        currentRef.addEventListener('loadedmetadata', (e) => {
+          console.log('Remote video loadedmetadata', e)
+        })
+        currentRef.addEventListener('*', (event) => {
+          console.log('Remote video event:', event)
+        })
       }
     }
     return () => {
