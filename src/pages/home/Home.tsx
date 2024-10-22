@@ -16,7 +16,6 @@ const Home = () => {
   const [idToCall, setIdToCall] = useState('')
 
   const handleHangUp = () => {
-    // setIsFullscreen(false)
     doHangUp?.(true)
   }
 
@@ -54,12 +53,11 @@ const Home = () => {
       <ModalDialog
         openModal={isCallModalOpen}
         closeModal={() => setIsCallModalOpen(false)}
-        title='You get a call from +1 555 555 555. Do you want to accept?'
+        title={`Incoming call from ${callerId}. Accept?`}
         acceptLabel='Accept'
         cancelLabel='Cancel'
         acceptHandler={() => {
           setIsCallModalOpen(false)
-          // setIsFullscreen(true)
           doAnswer?.()
           console.log('Accept')
         }}

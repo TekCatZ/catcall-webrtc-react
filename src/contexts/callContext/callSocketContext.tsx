@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useEffect, useRef, useState } from 'react'
+import { createContext, ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 
 interface CallSocketContextType {
   selfId?: string
@@ -31,48 +31,6 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
 
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null)
-
-  useEffect(() => {
-    ws.onopen = () => {
-      console.log('Connected to the signaling server')
-    }
-    startLocalStream()
-  }, [])
-
-  useEffect(() => {
-    ws.onerror = (error) => {
-      console.error('Error:', error)
-    }
-
-    ws.onmessage = (message) => {
-      const data = JSON.parse(message.data)
-
-      switch (data.type) {
-        case 'id':
-          setClientId(data.id)
-          break
-
-        case 'offer':
-          handleReceiveOffer(data.offer, data.from)
-          break
-
-        case 'answer':
-          handleReceiveAnswer(data.answer)
-          break
-
-        case 'ice-candidate':
-          handleNewICECandidate(data.candidate)
-          break
-
-        case 'hang-up':
-          handleHangUp(false)
-          break
-
-        default:
-          console.log('Unknown message:', data)
-      }
-    }
-  }, [])
 
   const handleNewICECandidate = (candidate: RTCIceCandidate) => {
     if (peerConnectionRef.current) {
@@ -140,44 +98,47 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
     setIsCalling(true)
   }
 
-  const handleHangUp = (manualFire: boolean) => {
-    if (manualFire) {
-      // Gửi tín hiệu "hang up" cho đối tác
-      ws.send(
-        JSON.stringify({
-          type: 'hang-up',
-          // get partner id from current call
-          targetId: callerId || targetId,
-        }),
-      )
-    }
+  const handleHangUp = useCallback(
+    (manualFire: boolean) => {
+      if (manualFire) {
+        // Gửi tín hiệu "hang up" cho đối tác
+        ws.send(
+          JSON.stringify({
+            type: 'hang-up',
+            // get partner id from current call
+            targetId: callerId || targetId,
+          }),
+        )
+      }
 
-    // Clean up local and remote streams
-    if (localStream) {
-      const tracks = localStream.getTracks()
-      tracks.forEach((track) => track.stop())
-    }
+      // Clean up local and remote streams
+      if (localStream) {
+        const tracks = localStream.getTracks()
+        tracks.forEach((track) => track.stop())
+      }
 
-    if (remoteStream) {
-      const tracks = remoteStream.getTracks()
-      tracks.forEach((track) => track.stop())
-    }
+      if (remoteStream) {
+        const tracks = remoteStream.getTracks()
+        tracks.forEach((track) => track.stop())
+      }
 
-    // Close peer connection
-    if (peerConnectionRef.current) {
-      peerConnectionRef.current.close()
-      peerConnectionRef.current = null
-    }
+      // Close peer connection
+      if (peerConnectionRef.current) {
+        peerConnectionRef.current.close()
+        peerConnectionRef.current = null
+      }
 
-    // Reset state
-    setRemoteStream(null)
+      // Reset state
+      setRemoteStream(null)
 
-    setCallerId('')
-    setCallerOffer(null)
-    setIsCalling(false)
-    setIsInCall(false)
-    setTargetId('')
-  }
+      setCallerId('')
+      setCallerOffer(null)
+      setIsCalling(false)
+      setIsInCall(false)
+      setTargetId('')
+    },
+    [callerId, localStream, remoteStream, targetId],
+  )
 
   const createPeerConnection = (targetId: string) => {
     const peerConnection = new RTCPeerConnection({
@@ -212,6 +173,48 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
     })
     setLocalStream(stream)
   }
+
+  useEffect(() => {
+    ws.onopen = () => {
+      console.log('Connected to the signaling server')
+    }
+    startLocalStream()
+  }, [])
+
+  useEffect(() => {
+    ws.onerror = (error) => {
+      console.error('Error:', error)
+    }
+
+    ws.onmessage = (message) => {
+      const data = JSON.parse(message.data)
+
+      switch (data.type) {
+        case 'id':
+          setClientId(data.id)
+          break
+
+        case 'offer':
+          handleReceiveOffer(data.offer, data.from)
+          break
+
+        case 'answer':
+          handleReceiveAnswer(data.answer)
+          break
+
+        case 'ice-candidate':
+          handleNewICECandidate(data.candidate)
+          break
+
+        case 'hang-up':
+          handleHangUp(false)
+          break
+
+        default:
+          console.log('Unknown message:', data)
+      }
+    }
+  }, [handleHangUp])
 
   return (
     <CallSocketContext.Provider
