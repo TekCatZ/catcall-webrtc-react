@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+env:
+  VITE_REACT_APP_WS_URL: wss://example.com
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,11 +28,13 @@ jobs:
       run: yarn install
 
     - name: Build the React app
+      run: echo "REACT_APP_WS_URL=$VITE_REACT_APP_WS_URL" 
+      env:
+       VITE_REACT_APP_WS_URL: ${{ vars.VITE_REACT_APP_WS_URL }}
       run: yarn build
 
     - name: Deploy to Firebase
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
       run: |
-        yarn global add firebase-tools
-        firebase deploy --only hosting
+        yarn dlx firebase-tools deploy --only hosting
