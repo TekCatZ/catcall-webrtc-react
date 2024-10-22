@@ -51,7 +51,8 @@ const CallContent = ({ hangUpHandler }: { hangUpHandler: () => void }) => {
         <div>
           <video
             playsInline
-            muted
+            controls
+            controlsList='nodownload'
             ref={internalRemoteRef}
             autoPlay
             className='h-full w-full md:w-auto rounded-xl shadow-lg'

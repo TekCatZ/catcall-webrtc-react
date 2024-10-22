@@ -165,7 +165,7 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const startLocalStream = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
     stream.getTracks().forEach((track) => {
       if (peerConnectionRef.current) {
         peerConnectionRef.current.addTrack(track, stream)

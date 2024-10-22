@@ -31,7 +31,7 @@ const Home = () => {
         <div
           className={`flex flex-row justify-center ease-in-out duration-1000 ${isInCall ? 'flex-1 transition-all' : 'flex-0 transition-all'}`}>
           <FluentCard
-            addOnClasses={`max-w-[50vw] lg:max-w-[35vw] duration-1000 transition-all ease-in-out ${isInCall ? 'flex-1 ' : ' flex-0'} `}>
+            addOnClasses={` ${isInCall ? ' ' : ' max-w-[50vw] lg:max-w-[35vw]'}  duration-1000 transition-all ease-in-out ${isInCall ? 'flex-1 ' : ' flex-0'} `}>
             {!isInCall ? (
               <QuickStart
                 quickId={selfId ?? ''}
