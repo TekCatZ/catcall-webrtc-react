@@ -88,12 +88,43 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
     setIsInCall(true)
   }
 
+  const _resetStreams = useCallback(() => {
+    if (localStream) {
+      const tracks = localStream.getTracks()
+      tracks.forEach((track) => track.stop())
+    }
+
+    if (remoteStream) {
+      const tracks = remoteStream.getTracks()
+      tracks.forEach((track) => track.stop())
+    }
+
+    setLocalStream(null)
+    setRemoteStream(null)
+  }, [localStream, remoteStream])
+
+  const _resetAll = useCallback(() => {
+    _resetStreams()
+
+    if (peerConnectionRef.current) {
+      peerConnectionRef.current.close()
+      peerConnectionRef.current = null
+    }
+
+    setCallerId('')
+    setCallerOffer(null)
+    setIsCalling(false)
+    setIsInCall(false)
+    setTargetId('')
+  }, [_resetStreams])
+
   const makeCall = async (targetId: string, videoCall: boolean) => {
     setTargetId(targetId)
     const peerConnection = createPeerConnection(targetId)
     peerConnectionRef.current = peerConnection
 
     setVideoCall(videoCall)
+    setIsCalling(true)
     await startLocalStream(videoCall)
 
     const offer = await peerConnection.createOffer()
@@ -107,8 +138,6 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
         isVideoCall: videoCall,
       }),
     )
-
-    setIsCalling(true)
   }
 
   const rejectCall = () => {
@@ -124,8 +153,7 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const handleReceiveReject = () => {
-    peerConnectionRef.current?.close()
-    peerConnectionRef.current = null
+    _resetAll()
   }
 
   const handleHangUp = useCallback(
@@ -142,32 +170,9 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
       }
 
       // Clean up local and remote streams
-      if (localStream) {
-        const tracks = localStream.getTracks()
-        tracks.forEach((track) => track.stop())
-      }
-
-      if (remoteStream) {
-        const tracks = remoteStream.getTracks()
-        tracks.forEach((track) => track.stop())
-      }
-
-      // Close peer connection
-      if (peerConnectionRef.current) {
-        peerConnectionRef.current.close()
-        peerConnectionRef.current = null
-      }
-
-      // Reset state
-      setRemoteStream(null)
-
-      setCallerId('')
-      setCallerOffer(null)
-      setIsCalling(false)
-      setIsInCall(false)
-      setTargetId('')
+      _resetAll()
     },
-    [callerId, localStream, remoteStream, targetId],
+    [_resetAll, callerId, targetId],
   )
 
   const createPeerConnection = (targetId: string) => {
@@ -252,7 +257,7 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
           Logger.log('Unknown message:', data)
       }
     }
-  }, [handleHangUp])
+  }, [handleHangUp, handleReceiveReject])
 
   return (
     <CallSocketContext.Provider
