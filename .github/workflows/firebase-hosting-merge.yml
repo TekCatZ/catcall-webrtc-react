@@ -7,7 +7,7 @@ on:
     branches:
       - main
 jobs:
-  build_and_deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,6 +19,52 @@ jobs:
 
       - name: Build (yarn)
         run: yarn run build
+
+      - name: Get current directory
+        run: |
+          pwd
+          ls -la
+
+      - name: Verify dist directory
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Error: dist directory does not exist."
+            exit 1
+          fi
+
+      - name: Upload dist folder
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+  
+
+  
+  deploy_live:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Re-create dist folder
+        run: |
+          mkdir dist
+      - name: Download dist folder
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+        
+      - name: Get current directory
+        run: |
+          pwd
+          ls -la
+
+      - name: Verify dist directory
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Error: dist directory does not exist."
+            exit 1
+          fi
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
