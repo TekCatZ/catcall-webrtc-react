@@ -14,7 +14,8 @@ const Home = () => {
 
   const [isCallModalOpen, setIsCallModalOpen] = useState(false)
 
-  const { selfId, makeCall, callerId, doAnswer, doHangUp, isInCall, doRejectCall } = useContext(CallSocketContext) || {}
+  const { selfId, makeCall, callerId, doAnswer, doHangUp, isInCall, doRejectCall } =
+    useContext(CallSocketContext) || {}
 
   const [idToCall, setIdToCall] = useState('')
 
@@ -38,6 +39,7 @@ const Home = () => {
             {!isInCall ? (
               <QuickStart
                 quickId={selfId ?? ''}
+                partnerId={idToCall}
                 audioCallHanlder={() => {
                   makeCall?.(idToCall, false)
                   logEvent(analytics, 'audio_call')

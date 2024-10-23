@@ -152,10 +152,6 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
     setCallerOffer(null)
   }
 
-  const handleReceiveReject = () => {
-    _resetAll()
-  }
-
   const handleHangUp = useCallback(
     (manualFire: boolean) => {
       if (manualFire) {
@@ -246,7 +242,7 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
           break
 
         case 'call-rejected':
-          handleReceiveReject()
+          _resetAll()
           break
 
         case 'hang-up':
@@ -257,7 +253,7 @@ const CallContextProvider = ({ children }: { children: ReactNode }) => {
           Logger.log('Unknown message:', data)
       }
     }
-  }, [handleHangUp, handleReceiveReject])
+  }, [_resetAll, handleHangUp])
 
   return (
     <CallSocketContext.Provider
