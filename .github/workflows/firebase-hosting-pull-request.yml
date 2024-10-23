@@ -26,7 +26,10 @@ jobs:
         run: yarn install
 
       - name: Build (yarn)
-        run: yarn run build
+        env:
+         VITE_REACT_APP_WS_URL: ${{ vars.VITE_REACT_APP_WS_URL }}
+        run: yarn build
+  
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
