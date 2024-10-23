@@ -39,6 +39,12 @@ jobs:
             echo "Error: dist directory does not exist."
             exit 1
           fi
+
+      - name: Go to dist directory
+        run: |
+          cd dist
+          pwd
+          ls -la
       - name: Upload dist folder
         uses: actions/upload-artifact@v4
         with:
