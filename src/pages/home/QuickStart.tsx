@@ -1,6 +1,12 @@
-import { ClipboardDocumentIcon, PhoneIcon, VideoCameraIcon } from '@heroicons/react/20/solid'
-import { useState } from 'react'
+import {
+  ClipboardDocumentIcon,
+  PhoneIcon,
+  PlayCircleIcon,
+  VideoCameraIcon,
+} from '@heroicons/react/20/solid'
+import { useContext, useState } from 'react'
 import { Tooltip as ReactTooltip } from 'react-tooltip'
+import { CallSocketContext } from '../../contexts/callContext/callSocketContext'
 
 interface QuickStartProps {
   quickId: number | string
@@ -14,6 +20,8 @@ const QuickStart = (props: QuickStartProps) => {
   const { quickId, audioCallHanlder, videoCallHandler } = props
 
   const [tooltipVisible, setTooltipVisible] = useState(false)
+
+  const { isCalling, isInCall } = useContext(CallSocketContext) || {}
 
   const handleCopy = () => {
     navigator.clipboard.writeText(quickId.toString())
@@ -69,12 +77,16 @@ const QuickStart = (props: QuickStartProps) => {
         <button
           className='rounded-full p-2 border-slate-300 hover:border-slate-300 hover:opacity-70 active:opacity-25 focus:outline-none'
           onClick={audioCallHanlder}>
-          <PhoneIcon className='rounded w-12' />
+          <PhoneIcon className='rounded w-12 text-cyan-500' />
         </button>
         <button
           className='rounded-full p-2 border-slate-300 hover:border-slate-300 hover:opacity-70 active:opacity-25 focus:outline-none'
           onClick={videoCallHandler}>
-          <VideoCameraIcon className='rounded w-12 h-12' />
+          {isCalling && !isInCall ? (
+            <PlayCircleIcon className='animate-spin rounded w-12 h-12' />
+          ) : (
+            <VideoCameraIcon className='rounded w-12 h-12 text-green-500' />
+          )}
         </button>
       </section>
     </>

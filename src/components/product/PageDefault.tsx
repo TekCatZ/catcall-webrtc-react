@@ -16,7 +16,7 @@ const PageDefault = (props: PageDefaultProps) => {
 
   return (
     <>
-      <header className='absolute right-0 top-0  p-4'>
+      <header className='absolute right-0 top-0  p-4 z-10'>
         <Toggle label='Gradient Background' value={meshGradient} onClick={toggleGradient} />
       </header>
       {meshGradient ? (
@@ -25,7 +25,9 @@ const PageDefault = (props: PageDefaultProps) => {
           colors={themeColors}
           speed={0.005}
         />
-      ) : null}
+      ) : (
+        <div className='z-0 w-full h-full absolute top-0 left-0 bg-gray-800 '></div>
+      )}
 
       {children}
     </>

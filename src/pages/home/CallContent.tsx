@@ -64,7 +64,7 @@ const CallContent = ({ hangUpHandler }: { hangUpHandler: () => void }) => {
       </figure>
       <section className='flex flex-row justify-center items-left mb-4 '>
         <FluentButton onClick={hangUpHandler}>
-          <PhoneXMarkIcon className='rounded w-12 h-12' />
+          <PhoneXMarkIcon className='rounded w-12 h-12 text-red-500' />
         </FluentButton>
       </section>
     </>
