@@ -1,6 +1,6 @@
 # CatCall WebRTC React
 
-CatCall WebRTC React is a lightweight proof of concept (POC) for video calls using WebRTC, built with ReactJS. This project demonstrates the basic functionalities required to establish a video call between two peers using WebRTC technology.
+CatCall WebRTC React is a simple proof of concept (POC) for video calls using WebRTC, built with ReactJS. This project demonstrates the basic functionalities required to establish a video call between two peers using WebRTC technology.
 
 ## Features
 
